@@ -3,6 +3,8 @@ package com.example.museu360
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
@@ -15,21 +17,26 @@ class MainActivity : ComponentActivity() {
     private var shouldHideNavigation = true
     private var lastTouchTime: Long = 0
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val webView: WebView = findViewById(R.id.webView)
+
         webView.clearCache(true)
         webView.clearHistory()
         webView.clearFormData()
-        webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
-        webView.webViewClient = WebViewClient()
-        webView.loadUrl("https://www.museusdepernambuco360.com.br")
 
+        val settings: WebSettings = webView.settings
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
 
+        // Configura o WebViewClient personalizado para controlar o redirecionamento
+        webView.webViewClient = CustomWebViewClient()
+
+        // Carrega a página inicial do seu site
+        webView.loadUrl("https://www.museusdepernambuco360.com.br/home")
 
         // Configuração de visualização da barra de navegação
         window.decorView.systemUiVisibility = (
@@ -54,5 +61,26 @@ class MainActivity : ComponentActivity() {
             false
         }
     }
-}
 
+    private class CustomWebViewClient : WebViewClient() {
+        private var redirectCount = 0
+        private val MAX_REDIRECT_COUNT = 1 // Limite máximo de redirecionamentos
+
+        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            val url = request?.url?.toString()
+
+            if (url != null && url.startsWith("https://www.museusdepernambuco360.com.br/")) {
+                if (redirectCount < MAX_REDIRECT_COUNT) {
+                    redirectCount++
+                    return false // Permite o carregamento da URL
+                } else {
+                    // Limite máximo de redirecionamentos atingido, carrega a página específica
+                    view?.loadUrl("https://www.museusdepernambuco360.com.br/home-mobile")
+                    return true // Bloqueia o redirecionamento padrão
+                }
+            }
+
+            return false // Permite o carregamento da URL para outros casos
+        }
+    }
+}
