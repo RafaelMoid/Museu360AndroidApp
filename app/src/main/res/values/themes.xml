@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Museu360" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="AppTheme" parent="Theme.Museu360">
+        <!-- Adicione ou modifique o atributo colorPrimary para a cor de fundo da barra superior -->
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="Theme.Museu360" />
+
+    <style name="AppTheme.PopupOverlay" parent="Theme.Museu360" />
+</resources>
